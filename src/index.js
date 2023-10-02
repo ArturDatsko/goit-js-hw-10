@@ -27,25 +27,10 @@ const showInfo = info => {
   catInfo.innerHTML = markup;
 };
 
-fetchBreeds()
-  .then(result => {
-    setupSelector(result);
-    selector.classList.toggle('is-hidden');
-    loader.classList.toggle('is-hidden');
-  })
-  .then(() => new SlimSelect({ select: '.breed-select' }))
-  .catch(() => {
-    Notiflix.Notify.failure(
-      `Oops! Something went wrong! Try reloading the page!`,
-      { timeout: 4000, useIcon: false }
-    );
-  });
-
 const onSelect = () => {
   loader.classList.toggle('is-hidden');
   fetchCatByBreed(selector.value)
     .then(result => {
-      loader.classList.toggle('is-hidden');
       showInfo(result);
     })
     .catch(() => {
@@ -53,7 +38,30 @@ const onSelect = () => {
         `Oops! Something went wrong! Try reloading the page!`,
         { timeout: 4000, useIcon: false }
       );
+    })
+    .finally(() => {
+      loader.classList.toggle('is-hidden');
     });
 };
 
 selector.addEventListener('change', onSelect);
+
+const setupBreedsSelector = () => {
+  fetchBreeds()
+    .then(result => {
+      setupSelector(result);
+      selector.classList.toggle('is-hidden');
+    })
+    .then(() => new SlimSelect({ select: '.breed-select' }))
+    .catch(() => {
+      Notiflix.Notify.failure(
+        `Oops! Something went wrong! Try reloading the page!`,
+        { timeout: 4000, useIcon: false }
+      );
+    })
+    .finally(() => {
+      loader.classList.toggle('is-hidden');
+    });
+};
+
+setupBreedsSelector();
